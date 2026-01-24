@@ -1,0 +1,62 @@
+<!-- Documents\Visual Studio [Version]\Code Snippets\Visual C#\My Code Snippets
+
+-->
+
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet>
+    <Header>
+      <Title>Standardized Step</Title>
+      <Author>Gilles Maupoint</Author>
+      <Description>Génère un step en utilisant un nom de type unique pour toutes les références.</Description>
+      <Shortcut>Step</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <!-- 1. La variable principale : l'utilisateur saisit seulement celle-ci -->
+        <Literal>
+          <ID>TYPE_NAME</ID>
+          <ToolTip>Nom du type principal (ex: Order, User, Invoice)</ToolTip>
+          <Default>Step</Default>
+        </Literal>
+
+        <!-- 2. Variables dérivées (elles utilisent $TYPE_NAME$ dans leur définition) -->
+        
+        <!-- L'interface de service (I + TypeName + Service) -->
+        <Derived>
+          <ID>SERVICE_INTERFACE</ID>
+          <Type>String</Type>
+          <Text>$SERVICE_INTERFACE$</Text>
+          <Format>
+             <ReplaceWith>I$TYPE_NAME$Service</ReplaceWith>
+          </Format>
+        </Derived>
+
+        <!-- Le nom de la méthode de service (Get + TypeName) -->
+        <Derived>
+          <ID>SERVICE_METHOD_NAME</ID>
+          <Type>String</Type>
+          <Text>$SERVICE_METHOD_NAME$</Text>
+          <Format>
+             <ReplaceWith>Get$TYPE_NAME$</ReplaceWith>
+          </Format>
+        </Derived>
+        
+      </Declarations>
+      <Code Language="csharp" Delimiter="##">
+        <![CDATA[
+public sealed class $TYPE_NAME$Step : StepBase<$TYPE_NAME$>
+{
+    private readonly $SERVICE_INTERFACE$ _service;
+    public $TYPE_NAME$Step($SERVICE_INTERFACE$ service) => _service = service;
+
+    protected override $TYPE_NAME$ ExecuteTyped(BuildContext ctx)
+    {
+        return _service.$SERVICE_METHOD_NAME$();
+    }
+}
+]]>
+    </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
