@@ -20,7 +20,9 @@ public sealed class CriteriaStep : StepBase<Criteria>
 
     protected override Criteria ExecuteTyped(BuildContext ctx)
     {
-        return _service.GetCriteres();
+// Service : Récupère les données brutes
+public List<CriteresDto> GetCriteresData() { /* ... */ } 
+        return _service.GetCriteresData();
     }
 }
 
