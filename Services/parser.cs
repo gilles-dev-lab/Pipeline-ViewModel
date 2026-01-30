@@ -51,7 +51,7 @@ namespace URIParserWithHandlers
 
             foreach (var segment in pathSegments)
             {
-                var keyValue = segment.Split('=');
+                var keyValue = segment.Split('-');
                 if (keyValue.Length == 2)
                 {
                     var key = keyValue[0];
