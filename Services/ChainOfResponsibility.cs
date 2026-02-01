@@ -12,19 +12,49 @@ public interface ISeoEngine {
    void ApplySeo(CriteresDto criteria, SeoDto dto); 
 }
 
-// Classe abstraite
-public abstract class SeoHandler
+// Classe abstraite : refaire implémentations  concrètes
+ public abstract class SeoHandler
 {
-    protected SeoHandler Next;
+    private readonly ILogger<SeoHandler> _logger;
+    private SeoHandler _successor;
 
-    public SeoHandler SetNext(SeoHandler next)
+    protected SeoHandler(ILogger<SeoHandler> logger)
     {
-        Next = next;
-        return next;
+        _logger = logger;
     }
 
-    public abstract bool Handle(CriteresDto c, SeoDto dto);
+    public SeoHandler SetNext(SeoHandler successor)
+    {
+        _successor = successor;
+        return successor;
+    }
+
+    public bool Handle(CriteresDto c, SeoDto dto)
+    {
+        try
+        {
+            _logger.LogDebug("Processing {Handler}", GetType().Name);
+
+            if (Process(c, dto))
+            {
+                _logger.LogInformation("{Handler} handled the request", GetType().Name);
+                return true;
+            }
+
+            _logger.LogDebug("{Handler} did not handle, passing to successor", GetType().Name);
+            return _successor?.Handle(c, dto) ?? false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in {Handler}", GetType().Name);
+            throw; // ou gestion métier
+        }
+    }
+
+    protected abstract bool Process(CriteresDto c, SeoDto dto);
 }
+
+
 
 
 // Implémentations concrètes
@@ -144,8 +174,11 @@ public class SeoEngine: ISeoEngine
 {
     private readonly SeoHandler _root;
 
-    public SeoEngine()
+
+    public SeoEngine(DestinationHandler d,...)
     {
+//a.SetNext(b).SetNext(c).SetNext(d);
+    _root = a;
         // Règles Destination > Règles Activité > Règles par défaut
         _root = new DestinationHandler();
         _root
