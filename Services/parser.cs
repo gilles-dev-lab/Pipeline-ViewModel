@@ -14,6 +14,9 @@ namespace demo
 	public class UriParserWithHandler
 	{
 		private Dictionary<string, Action<MyDto, string, string>> _handlers;
+		enum MethodKey { "ps", "rn", Z }
+		HashSet<MethodKey> _segmentExecuted = new();
+		
 		public UriParserWithHandler()
 		{
 			_handlers = new Dictionary<string, Action<MyDto, string, string>>();
@@ -21,6 +24,7 @@ namespace demo
 		}
 		private void InitializeHandlers()
 		{
+			//if (!_segmentExecuted.Add(key))  return;
 			_handlers["ps"] = (dto, key, value) => { dto.User = value; Console.WriteLine($"Handling pays: {value}"); };
 			_handlers["action"] = (dto, key, value) => { dto.Action = value; Console.WriteLine($"Handling action: {value}"); };
 			_handlers["duree"] = (dto, key, value) => { dto.Id = int.TryParse(value, out var id) ? id : (int?)null; Console.WriteLine($"Handling duree: {value}"); };
@@ -35,7 +39,7 @@ namespace demo
 			foreach (var segment in pathSegments)
 			{
 				var keyValue = segment.Split('-');
-				if (keyValue.Length == 2)
+				if (keyValue.Length == 2 && )
 				{
 					var key = keyValue[0];
 					var value = keyValue[1].Replace("/","");
