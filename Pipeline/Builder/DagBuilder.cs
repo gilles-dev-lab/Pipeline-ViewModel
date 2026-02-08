@@ -8,11 +8,12 @@ public interface IDagBuilder {
 
 /// Le builder utilise un contexte de construction (ctx) comme espace de travail intermédiaire.
 /// Les steps enrichissent ce contexte au fur et à mesure, puis "IBuildContextToVmConverter" le convertit en ViewModel final.
-public sealed class DagBuilder: IDagBuilder
+public sealed class DagBuilder<TParams,TVm>: IDagBuilder
 {
-    private readonly List<IStep> _steps;
+    
+    private readonly IReadOnlyList<IStep<TParams, TVm>> _steps;
 
-    public DagBuilder(IEnumerable<IStep> steps)
+    public DagBuilder(IEnumerable<IStep<TParams,TVm>> steps)
     {
         _steps = (steps ?? throw new ArgumentNullException(nameof(steps))).ToList();
         if (!_steps.Any()) throw new ArgumentException("Au moins un step est requis.", nameof(steps));
