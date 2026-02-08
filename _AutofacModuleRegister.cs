@@ -30,10 +30,17 @@ public class ModuleListeResultats : Module
         // =========================
         // Orchestrator (configuration)
         // =========================
-        // 1️⃣ Enregistrer toutes les étapes fermées
-builder.RegisterAssemblyTypes(stepAssemblies)
-       .AsClosedTypesOf(typeof(IStep<,>))
-       .InstancePerDependency();
+
+
+        var assembly = typeof(FeatureAModule).Assembly;
+
+        builder.RegisterAssemblyTypes(assembly)
+               .Where(t => t.Namespace != null &&
+                           t.Namespace.StartsWith("Application.Features.ListeResultats") &&
+                           typeof(IStep).IsAssignableFrom(t))
+               .As<IStep>()
+               .InstancePerDependency();
+
 
 // 2️⃣ Enregistrer le DAG par use case
 builder.RegisterType<DagBuilder<BuildParametersListeResultats, ListeResultatsViewModel>>()
