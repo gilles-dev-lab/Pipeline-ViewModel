@@ -9,7 +9,7 @@ public interface IDagBuilder<TParams, TVm>
 
 /// Le builder utilise un contexte de construction (ctx) comme espace de travail intermédiaire.
 /// Les steps enrichissent ce contexte au fur et à mesure, puis "IBuildContextToVmConverter" le convertit en ViewModel final.
-public sealed class DagBuilder<TParams,TVm>: IDagBuilder
+public sealed class DagBuilder<TParams,TVm>: IDagBuilder<TParams, TVm>
 {
     
     private readonly IReadOnlyList<IStep<TParams, TVm>> _steps;
@@ -24,12 +24,14 @@ public sealed class DagBuilder<TParams,TVm>: IDagBuilder
     /// Gère les différentes étapes (validation, ordonnanement)
     /// On renvoie un ctx (merci Obvious ! :-)
     /// </summary>
-    public BuildContext BuildContext<TParameters>(TParameters parameters) where TParameters : class
+    public BuildContext BuildContext<TParams,TVm>(TParams parameters) 
+    where TParams : class
+    where TVm : class
     {
         ValidateGraph();
 
         var batches = TopologicalSortBatches();
-        var ctx = new BuildContext();
+        var ctx = new BuildContext<TVm>();
 
         if (parameters != null)
         {
