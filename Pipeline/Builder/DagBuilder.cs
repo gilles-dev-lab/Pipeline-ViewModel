@@ -91,21 +91,19 @@ public sealed class DagBuilder<TParams,TVm>: IDagBuilder
 
         // Ensemble des types réellement produits par le graphe.
         // Utilisé pour des recherches rapides (Contains).
-        var producedTypes = producersByType.Keys.ToHashSet();
- 
-        // _steps contient toutes les étapes du graphe (injectées via la DI).
-        // Chaque étape déclare les types dont elle dépend (DependencyTypes).
-        // On vérifie ici que chaque dépendance correspond bien
-        // à un type produit par une autre étape.
-        foreach (var step in _steps)
+        var producedTypes = producersByType.Keys;
+
+        var missingDeps =
+            from step in _steps
+            from dep in step.DependencyTypes
+            where !producedTypes.Contains(dep)
+            select (step, dep);
+        
+        foreach (var (step, dep) in missingDeps)
         {
-            foreach (var dep in step.DependencyTypes)
-            {
-                if (!producedTypes.Contains(dep))
-                    throw new InvalidOperationException(
-                        $"L'étape produisant {step.ProducedType.Name} dépend de {dep.Name}, mais aucune étape ne produit ce type."
-                    );
-            }
+            throw new InvalidOperationException(
+                $"L'étape produisant {step.ProducedType.Name} dépend de {dep.Name}, mais aucune étape ne produit ce type."
+            );
         }
         // Vérifie qu'il n'existe pas de dépendances circulaires entre les types
         // (ex: A dépend de B, B dépend de A).
