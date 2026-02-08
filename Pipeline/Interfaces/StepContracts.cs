@@ -10,3 +10,10 @@ public interface IStep
     IReadOnlyCollection<Type> DependencyTypes { get; }
     object? Execute(BuildContext ctx);
 }
+
+public interface IStep<TParams, TVm>
+{
+    Type ProducedType { get; }
+    IEnumerable<Type> DependencyTypes { get; }
+    void Execute(TParams parameters, BuildContext<TVm> context);
+}
