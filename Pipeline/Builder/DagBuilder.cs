@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public interface IDagBuilder {
-    BuildContext BuildContext(TParameters parameters);
+public interface IDagBuilder<TParams, TVm>
+{
+    BuildContext<TVm> BuildContext(TParams parameters);
 }
 
 /// Le builder utilise un contexte de construction (ctx) comme espace de travail intermédiaire.
